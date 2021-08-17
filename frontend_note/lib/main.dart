@@ -2,6 +2,7 @@ import 'dart:convert';
 
 // import 'package:djangoapp/urls.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend_note/update.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
@@ -70,12 +71,13 @@ class _MyHomePageState extends State<MyHomePage> {
     response.forEach((element) {
       notes.add(Note.fromMap(element));
     });
-    setState(() {
-      
-    });
+    setState(() {});
   }
 
-  void _addNote()
+  void _deleteNote(int id) {
+    client.delete(deleteUrl(id));
+    _retrieveNotes();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,21 +89,23 @@ class _MyHomePageState extends State<MyHomePage> {
         onRefresh: () async {
           _retrieveNotes();
         },
-        child: ListView.builder(itemCount: notes.length,
-         itemBuilder: (BuildContext context, int index) {
-           return ListTile(
-             title: Text(notes[index].note),
-             onTap: () {
-
-             },
-             trailing: IconButton(icon: Icon(Icons.delete), 
-             onPressed: () {  },),
-          );
-         },
+        child: ListView.builder(
+          itemCount: notes.length,
+          itemBuilder: (BuildContext context, int index) {
+            return ListTile(
+              title: Text(notes[index].note),
+              onTap: () {},
+              trailing: IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => _deleteNote(notes[index].id),
+              ),
+            );
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _addNote,
+        onPressed: () =>
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => CreatePage(client: client,)),
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
